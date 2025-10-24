@@ -1,8 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef} from "react";
 import { supabase } from "../supabaseClient";
 import { useNavigate, Link } from "react-router-dom";
-import styles from "./Auth.module.css";
-import logo from "../assets/login.png";
+import styles from "./Login.module.css";
+import logo from "../assets/logo_second.png";
+import Lottie from "lottie-react";
+import loginAnimation from "../assets/animations/Login.json";
 import { Eye, EyeOff } from "lucide-react";
 
 export default function Login() {
@@ -12,6 +14,7 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const animationRef = useRef();
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -29,10 +32,11 @@ export default function Login() {
         ? "http://localhost:5173/dashboard"
         : "https://bestneelansh.github.io/collab/dashboard";
 
-      const { data: loginData, error: loginError } = await supabase.auth.signInWithPassword(
-        { email, password },
-        { redirectTo: redirectUrl } // ✅ environment-aware redirect
-      );
+      const { data: loginData, error: loginError } =
+        await supabase.auth.signInWithPassword(
+          { email, password },
+          { redirectTo: redirectUrl }
+        );
 
       if (loginError) {
         setMessage("Invalid login credentials.");
@@ -40,7 +44,6 @@ export default function Login() {
       }
 
       const user = loginData.user;
-
       if (!user.email_confirmed_at) {
         setMessage("Please confirm your email before logging in.");
         return;
@@ -66,64 +69,87 @@ export default function Login() {
     }
   };
 
-
   const handleForgotPassword = async () => {
     if (!email) {
       setMessage("Enter your email to reset password.");
       return;
     }
-    const redirectUrl = window.location.hostname.includes("localhost")
-        ? "http://localhost:5173/login"
-        : "https://bestneelansh.github.io/collab/login";
 
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: redirectUrl,
-      });
+    const redirectUrl = window.location.hostname.includes("localhost")
+      ? "http://localhost:5173/login"
+      : "https://bestneelansh.github.io/collab/login";
+
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: redirectUrl,
+    });
 
     if (error) setMessage(`Error sending reset email: ${error.message}`);
     else setMessage("Password reset email sent! Check your inbox.");
   };
 
   return (
-    <div className={styles.container}>
+    <div className={styles.mainContainer}>
+      {/* LEFT SIDE - Animation */}
+      <div className={styles.animationWrapper}>
+        <Lottie
+          animationData={loginAnimation}
+          loop={true}
+          autoplay={true}
+          style={{ width: 400, height: 400, margin: "0 auto" }}
+          rendererSettings={{
+            preserveAspectRatio: "xMidYMid slice",
+          }}
+        />
+      </div>
+
+      {/* RIGHT SIDE - Login Card */}
       <div className={styles.card}>
         <h1 className={styles.heading}>
           <img
             src={logo}
             alt="Logo"
+            className={styles.logoAnimation} // <-- add this
             style={{
-              width: 70,
-              height: 70,
+              width: 130,
+              height: 90,
               marginRight: 8,
               verticalAlign: "middle",
               borderRadius: "30%",
-              background: "linear-gradient(135deg, #667eea, #764ba2)",
               padding: 5,
             }}
           />
         </h1>
-
+        <h2 className={styles.welcomeBack}>Welcome Back</h2>
         <p className={styles.subHeading}>Log in with your email</p>
 
         <form onSubmit={handleEmailLogin} className={styles.form}>
+        <div className={styles.inputWrapper}>
           <input
             type="email"
-            placeholder="Email"
+            id="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
             className={styles.input}
+            placeholder=" " // keep a space for CSS :placeholder-shown trick
           />
+          <label htmlFor="email" className={styles.label}>Email</label>
+        </div>
+
 
           <div className={styles.passwordWrapper}>
-            <input
-              type={showPassword ? "text" : "password"}
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              className={styles.input}
-            />
+            <div className={styles.inputWrapper}>
+              <input
+                type={showPassword ? "text" : "password"}
+                id="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                className={styles.input}
+                placeholder=" "
+              />
+              <label htmlFor="password" className={styles.label}>Password</label>
+            </div>
             <button
               type="button"
               className={styles.passwordToggle}
@@ -161,7 +187,6 @@ export default function Login() {
           </div>
         </form>
 
-        {/* Centered signup link */}
         <div className={styles.signupFooter}>
           Don’t have an account?{" "}
           <Link to="/signup" className={styles.link}>

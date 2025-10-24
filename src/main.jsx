@@ -6,7 +6,7 @@ import "./index.css";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-      <BrowserRouter basename = "/collab/">. {/*!important*/}
+      <BrowserRouter basename = "/collab/">{/*!important*/}
         <App />
       </BrowserRouter>
   </React.StrictMode>
