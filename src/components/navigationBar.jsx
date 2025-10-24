@@ -24,7 +24,7 @@ export default function NavBar({ session }) {
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
-    window.location.href = "/";
+    window.location.href = "/collab/";
   };
 
   return (
