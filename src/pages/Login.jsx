@@ -25,10 +25,14 @@ export default function Login() {
     setLoading(true);
 
     try {
-      const { data: loginData, error: loginError } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
+      const redirectUrl = window.location.hostname.includes("localhost")
+        ? "http://localhost:5173/dashboard"
+        : "https://bestneelansh.github.io/collab/dashboard";
+
+      const { data: loginData, error: loginError } = await supabase.auth.signInWithPassword(
+        { email, password },
+        { redirectTo: redirectUrl } // ✅ environment-aware redirect
+      );
 
       if (loginError) {
         setMessage("Invalid login credentials.");
@@ -62,14 +66,20 @@ export default function Login() {
     }
   };
 
+
   const handleForgotPassword = async () => {
     if (!email) {
       setMessage("Enter your email to reset password.");
       return;
     }
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: "http://localhost:5173/login",
-    });
+    const redirectUrl = window.location.hostname.includes("localhost")
+        ? "http://localhost:5173/login"
+        : "https://bestneelansh.github.io/collab/login";
+
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: redirectUrl,
+      });
+
     if (error) setMessage(`Error sending reset email: ${error.message}`);
     else setMessage("Password reset email sent! Check your inbox.");
   };

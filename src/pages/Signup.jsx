@@ -28,10 +28,15 @@ export default function Signup() {
 
   try {
     // 1️⃣ Sign up the user
+    const redirectUrl = window.location.hostname.includes("localhost")
+      ? "http://localhost:5173/profile"
+      : "https://bestneelansh.github.io/collab/profile";
+
     const { data: authData, error: authError } = await supabase.auth.signUp(
       { email, password },
-      { redirectTo: "http://localhost:5173/profile" }
+      { redirectTo: redirectUrl }
     );
+
     if (authError) throw authError;
 
     const userId = authData.user?.id;
