@@ -1,0 +1,401 @@
+:root {
+  --nav-height: 70px; /* fallback, will be updated by JS */
+}
+
+.inboxContainer {
+  display: flex;
+  height: 100vh;
+  font-family: Arial, sans-serif;
+  background-color: #111827;
+  color: #f3f4f6;
+  gap: 0;
+  padding-top: var(--nav-height, 70px);
+}
+
+/* Sidebar */
+.sidebar {
+  min-width: 0;
+  width: 300px;
+  background-color: #1f2937;
+  border-right: 1px solid #3c11e8;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  position: relative;
+  height: calc(100vh - var(--nav-height, 70px)); /* full height under navbar */
+  transition: width 0.3s ease, transform 0.3s ease;
+  margin-right:10px;
+}
+
+.sidebar h3 {
+  color: #e0e7ff;
+  font-weight: 600;
+  font-size: 1.25rem;
+}
+
+.dragHandle {
+  position: absolute !important;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  width: 6px;
+  cursor: ew-resize;
+  z-index: 10;
+  background: transparent; 
+}
+
+.dragHandle:hover {
+  background-color: rgba(255,255,255,0.1);
+}
+
+/* When dragging */
+.sidebar.dragging {
+  user-select: none;
+  cursor: ew-resize;
+  opacity: 0.95;
+}
+
+.sidebar.collapsed {
+  width: 0 !important;        /* Force zero width */
+  padding: 0 !important;      /* Remove padding */
+  border-right: none !important;
+  overflow: hidden;
+}
+
+.sidebar.collapsed * {
+  display: none !important;   /* Hide all child elements */
+}
+
+.sidebar.collapsed ~ .chatWindow {
+  margin-left: 0 !important;
+}
+
+/* Search Input */
+.searchContainer {
+  position: relative;
+  width: 100%;
+  padding-bottom:10px;
+}
+
+.searchInput {
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid #4f46e5;
+  background-color: #111827;
+  color: #f3f4f6;
+  font-size: 0.95rem;
+  outline: none;
+  transition: box-shadow 0.2s;
+}
+
+.searchInput:focus {
+  box-shadow: 0 0 12px rgba(79,70,229,0.7);
+}
+
+/* Dropdown search results */
+.dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  max-height: 200px;
+  overflow-y: auto;
+  background-color: #2a2a2a;
+  border: 1px solid #3c11e8;
+  border-radius: 12px;
+  margin-top: 4px;
+  z-index: 20;
+  list-style: none;
+  padding: 0;
+  box-shadow: 0 4px 12px rgba(79,70,229,0.5);
+}
+
+.dropdownItem {
+  padding: 0.5rem 0.75rem;
+  cursor: pointer;
+  color: #fff;
+  transition: background 0.2s, box-shadow 0.2s;
+}
+
+.dropdownItem:hover {
+  background-color: #3c11e8;
+  box-shadow: 0 0 12px rgba(124,22,241,0.6);
+  border-radius: 8px;
+}
+
+/* Conversations list */
+/* Sidebar Conversations */
+.conversation {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  margin-bottom: 12px;
+  border-radius: 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background-color: #1f2937; /* dark card bg */
+  color: #f3f4f6;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+.conversation:hover {
+  background-color: #2a2a2a;
+  box-shadow: 0 6px 16px rgba(79,70,229,0.3);
+  transform: translateY(-1px);
+}
+
+/* Active Conversation */
+.active {
+  background-color: #3b82f6; /* blue highlight */
+  color: #fff;
+  box-shadow: 0 6px 18px rgba(59,130,246,0.6);
+}
+
+/* Conversation title */
+.conversationTitle {
+  font-weight: 500;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Left avatar */
+.conversationAvatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  color: white;
+  flex-shrink: 0;
+  font-size: 1rem;
+  transition: transform 0.2s;
+}
+
+.conversationAvatar:hover {
+  transform: scale(1.1);
+}
+
+/* Delete Button */
+.deleteBtn {
+  background: transparent;
+  border: none;
+  font-size: 1rem;
+  cursor: pointer;
+  color: #f87171; /* soft red */
+  transition: transform 0.2s, color 0.2s;
+}
+
+.deleteBtn:hover {
+  transform: scale(1.1);
+  color: #f55a5a;
+}
+
+/* Chat window */
+.chatWindow {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background-color: #111827;
+  padding: 0px;
+  gap: 12px;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Chat Header */
+.chatHeader {
+  position: sticky;
+  top: 0;
+  background-color: #1f2937;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 1px solid #3c11e8;
+  border-radius: 12px 12px 0 0;
+  font-weight: 600;
+  color: #e0e7ff;
+  z-index: 5;
+  box-shadow: 0 4px 12px rgba(79,70,229,0.4);
+}
+
+.chatHeaderAvatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: 700;
+  font-size: 1rem;
+  color: #fff;
+  text-transform: uppercase;
+  margin-right: 12px;
+}
+
+/* Messages area */
+.messages {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-right: 8px;
+  padding-top: 12px;
+  padding-left:8px;
+}
+
+/* For special hackathon interest messages */
+.hackathonInterestCard {
+  width: 100%;
+  background: linear-gradient(135deg, #5b21b6, #7c3aed);
+  border: 1px solid #8b5cf6;
+  color: #f9fafb;
+  border-radius: 12px;
+  padding: 0.8rem 1rem;
+  font-size: 0.95rem;
+  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
+  line-height: 1.4;
+  display: flex;
+  margin-bottom:0.6rem;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+/* Make it blend perfectly with normal chat bubbles */
+.message.self .hackathonInterestCard,
+.message.other .hackathonInterestCard {
+  background: linear-gradient(135deg, #6d28d9, #8b5cf6);
+  color: #ffffff;
+  border: none;
+  padding: 14px 18px;
+  width: 100%;
+}
+
+/* Hackathon title style inside message */
+.hackathonTitle {
+  margin-top: 6px;
+  font-weight: 600;
+  font-size: 1rem;
+  color: #ede9fe;
+}
+
+.message:has(.hackathonInterestCard) {
+  background: none;
+  box-shadow: none;
+}
+
+.hackathonInterestCard .hackathonTitle {
+  font-weight: 600;
+  margin-top: 4px;
+}
+
+/* Individual messages */
+.message {
+  padding: 0.8rem 1rem;
+  border-radius: 12px;
+  margin-bottom: 0.6rem;
+  max-width: 70%;
+  word-wrap: break-word;
+  font-family: 'Segoe UI', sans-serif;
+  
+}
+
+.self {
+  background: #007AFF; /* iMessage Blue */
+  color: white;
+  align-self: flex-end;
+  margin-left:7px;
+}
+
+.other {
+  background: #E9E9EB;
+  color: #111;
+  align-self: flex-start;
+  margin-right:7px;
+}
+
+
+/* Timestamp inside messages */
+.messageTime {
+  font-size: 0.65rem;
+  color: #aaa;
+  position: absolute;
+  bottom: 4px;
+  right: 8px;
+  pointer-events: none;
+}
+
+/* Input area */
+.inputArea {
+  display: flex;
+  gap: 8px;
+  padding-top: 8px;
+  padding-left:8px;
+}
+
+.inputArea input {
+  flex: 1;
+  padding: 10px 14px;
+  border-radius: 16px;
+  border: 1px solid #4f46e5;
+  background-color: #1f2937;
+  color: #f3f4f6;
+  font-size: 0.95rem;
+  outline: none;
+  transition: box-shadow 0.2s;
+}
+
+.inputArea input:focus {
+  box-shadow: 0 0 12px rgba(79,70,229,0.7);
+}
+
+.inputArea button {
+  padding: 10px 16px;
+  border-radius: 16px;
+  border: none;
+  background: linear-gradient(135deg, #3c11e8, #7c16f1);
+  color: #f3f4f6;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.inputArea button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 12px rgba(124,22,241,0.8);
+}
+
+/* Placeholder screen */
+.placeholder {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: #888;
+  padding: 2rem;
+}
+
+.placeholderImg {
+  width: 120px;
+  height: auto;
+  margin-bottom: 1rem;
+  opacity: 0.8;
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    width: 0;
+    overflow: hidden;
+  }
+  .chatWindow {
+    margin-left: 0;
+  }
+}

@@ -1,0 +1,547 @@
+.communitiesContainer {
+  background: #0f0f10;
+  min-height: 100vh;
+  color: #e0e0e0;
+  padding-bottom: 3rem;
+  padding-top:70px;
+}
+
+/* Hero Section */
+.hero {
+  text-align: center;
+  background: linear-gradient(135deg, #1f2937, #111827);
+  padding: 3rem 1rem 2rem;
+  border-radius: 24px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+  margin-bottom: 2rem;
+  position: relative;
+}
+
+.heroTitle {
+  font-size: 3rem;
+  font-weight: bold;
+  background: linear-gradient(270deg, #ff6ec4, #7873f5, #4ade80, #facc15);
+  background-size: 600% 600%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gradientFlow 8s ease infinite;
+}
+
+.heroSubtitle {
+  font-size: 1.2rem; 
+  color: #c7d2fe;
+  opacity: 0.9;
+  margin-bottom: 1.5rem;
+}
+
+/* Hero Buttons */
+.heroButtons {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+  justify-content:center;
+}
+
+/* Primary Add Post Button */
+.primaryButton {
+  padding: 0.7rem 1.5rem;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  background: linear-gradient(135deg, #4f46e5, #6d28d9);
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 6px 16px rgba(79, 70, 229, 0.3);
+  transition: all 0.3s ease;
+}
+
+.primaryButton:hover {
+  transform: translateY(-2px);
+  background: linear-gradient(135deg, #4338ca, #7c3aed);
+  box-shadow: 0 8px 20px rgba(67, 56, 202, 0.4);
+}
+
+/* Secondary Explore Posts Button */
+.secondaryButton {
+  padding: 0.7rem 1.5rem;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  background: linear-gradient(270deg, #10b981, #3b82f6, #8b5cf6);
+  background-size: 600% 600%;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  animation: gradientMove 6s ease infinite;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.secondaryButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.35);
+}
+
+/* Gradient animation keyframes */
+@keyframes gradientMove {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Sidebar */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 360px;
+  height: 100%;
+  background: #1b1b1d;
+  padding: 2rem 1.5rem;
+  box-shadow: inset -1px 0 8px rgba(0,0,0,0.2), 4px 0 24px rgba(0,0,0,0.5);
+  z-index: 2000;
+  display: flex;
+  flex-direction: column;
+  transform: translateX(-100%);
+  transition: transform 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+  border-radius: 0 24px 24px 0;
+  color: #f3f4f6;
+}
+
+.sidebar.open {
+  transform: translateX(0);
+}
+
+.sidebarHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #333;
+  margin-bottom:0.4rem;
+  padding-bottom:1rem;
+}
+
+.sidebarHeader h2 {
+  text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  color: #aaa;
+  font-size: 1.4rem;
+  cursor: pointer;
+  transition: color 0.2s ease, transform 0.2s ease;
+  position: absolute;
+  top: 1.4rem;
+  right: 1.8rem;
+}
+
+.closeButton:hover {
+  color: #fff;
+  transform: rotate(30deg);
+}
+
+/* Overlay */
+.sidebarOverlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0,0,0,0.35);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease-in-out;
+  z-index: 1900;
+}
+
+.sidebarOverlay.active {
+  opacity: 1;
+  pointer-events: all;
+}
+
+/* Inputs and Select */
+.inputField {
+  width: 100%;
+  padding: 0.7rem 1rem;
+  margin-bottom: 1rem;
+  border: 1px solid #333;
+  border-radius: 10px;
+  background: #121212;
+  color: #e0e0e0;
+  transition: all 0.2s ease;
+  min-height:44px;
+}
+
+.inputField:focus {
+  border-color: #6366f1;
+  box-shadow: 0 0 8px rgba(99,102,241,0.3);
+}
+
+/* Bigger placeholder text */
+.inputField::placeholder {
+  font-size: 1rem; /* Increase as needed, e.g., 1.1rem or 1.2rem */
+  color: #888; /* lighter gray for better visibility */
+  opacity: 1; /* ensure full opacity */
+}
+
+textarea.inputField::placeholder {
+  font-size: 1rem;
+  color: #888;
+  opacity: 1;
+}
+
+.saveButton {
+  padding: 0.8rem;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #4f46e5, #6d28d9);
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-height:44px;
+  font-size:1rem;
+}
+
+.saveButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(79, 70, 229, 0.4);
+}
+
+.buttonWrapper {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 0.5rem;
+}
+
+/* Gradient Headings for Sidebar */
+.sidebarHeadline {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom:0rem;
+  background: linear-gradient(270deg, #ff6ec4, #7873f5, #4ade80, #facc15);
+  background-size: 600% 600%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: sidebarGradientFlow 6s ease infinite;
+  margin-top:30px;
+  padding-bottom:3px;
+  line-height:0.1rem;
+}
+
+.sidebarSubtext {
+  font-size: 0.95rem;
+  color: #aaa;
+  margin-bottom: 1rem;
+  margin-top:10px;
+}
+
+/* Gradient Animation */
+@keyframes sidebarGradientFlow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* React Select Dark Theme */
+.react-select__control {
+  background-color: #121212 !important;
+  border-radius: 10px !important;
+  border: 1px solid #333 !important;
+  min-height: 40px;
+  box-shadow: none !important;
+}
+
+.react-select__single-value {
+  color: #e0e0e0 !important;
+}
+
+.react-select__menu {
+  background-color: #1a1a1d !important;
+  border-radius: 12px !important;
+  border: 1px solid #333 !important;
+}
+
+.react-select__option {
+  background-color: #1a1a1d !important;
+  color: #e0e0e0 !important;
+}
+
+.react-select__option--is-focused {
+  background-color: #2a2a2e !important;
+}
+
+.react-select__option--is-selected {
+  background-color: #2a2a2e !important;
+  color: #6366f1 !important;
+}
+
+/* Dropdown indicator & separator */
+.react-select__indicator-separator {
+  background-color: transparent !important;
+}
+.react-select__dropdown-indicator {
+  color: #aaa !important;
+}
+
+.react-select__menu {
+  background-color: #1a1a1d !important;
+  color: #e0e0e0 !important;
+}
+
+
+/* Posts Feed */
+.postsFeed {
+  padding: 2rem 1rem;
+  max-width: 1100px;
+  margin: auto;
+}
+
+.feedHeader {
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+
+.searchFilter {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.filterDropdown {
+  width: 160px;
+}
+
+/* Posts Grid */
+.communityGrid {
+  display: grid;
+  gap: 1.2rem;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+.communityCard {
+  background: #1a1a1d;
+  border-radius: 12px;
+  padding: 1rem;
+  transition: transform 0.2s, box-shadow 0.2s;
+  border: 1px solid #222;
+}
+.communityCard:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+}
+
+.badgeWrapper {
+  margin-bottom: 0.5rem;
+}
+
+.badge {
+  padding: 0.2rem 0.6rem;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  text-transform: capitalize;
+  font-weight: 500;
+  color: #fff;
+}
+
+.badge-announcement {
+  background: #f59e0b;
+}
+.badge-question {
+  background: #3b82f6;
+}
+.badge-discussion {
+  background: #10b981;
+}
+
+.communityTitle {
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+}
+
+.communityContent {
+  font-size: 0.95rem;
+  color: #bbb;
+  margin-bottom: 0.75rem;
+}
+
+.postDate {
+  font-size: 0.8rem;
+  color: #777;
+}
+
+/* Gradient animation */
+@keyframes gradientFlow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Modal overlay */
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0,0,0,0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 3000;
+  padding: 1rem;
+}
+
+/* Modal box */
+.modalContent {
+  background: #1b1b1d;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 600px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  animation: modalFadeIn 0.3s ease;
+}
+
+/* Modal header */
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.2rem;
+  background: #222;
+  border-bottom: 1px solid #333;
+}
+
+.modalHeader h3 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #fff;
+}
+
+.modalHeader .closeButton {
+  background: none;
+  border: none;
+  font-size: 1.4rem;
+  color: #aaa;
+  cursor: pointer;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+.modalHeader .closeButton:hover {
+  color: #fff;
+  transform: rotate(90deg);
+}
+
+/* Modal body scroll */
+.modalBody {
+  padding: 1rem;
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+/* Comment item */
+.commentItem {
+  background: #121212;
+  padding: 0.6rem 0.8rem;
+  border-radius: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  border: 1px solid #333;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.commentItem:hover {
+  background: #1a1a1d;
+  transform: translateY(-1px);
+}
+
+.commentText {
+  flex: 1;
+  margin-right: 8px;
+}
+
+.commentUsername {
+  color: #6366f1; /* username highlight color */
+  font-weight: 600;
+}
+
+.commentTimestamp {
+  font-size: 0.75rem;
+  color: #888;
+  white-space: nowrap;
+  flex-shrink: 0;
+  opacity:0;
+}
+
+.commentButtonWrapper {
+  display: flex;
+  justify-content: flex-end; /* push button to right */
+  margin-top: 0.8rem;
+}
+
+.commentButton {
+  background: #222;
+  border: 1px solid #333;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  color: #888;
+  transition: all 0.2s ease;
+}
+
+.commentButton:hover {
+  background: #333;
+  color: #6366f1;
+  transform: scale(1.1);
+}
+
+.commentItem:hover .commentTimestamp {
+  opacity: 1; 
+}
+
+/* Add comment area */
+.addComment {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.8rem 1rem;
+  border-top: 1px solid #333;
+  background: #222;
+}
+
+.addComment .inputField {
+  flex: 1;
+  border-radius: 12px;
+  background: #121212;
+  color: #e0e0e0;
+  padding: 0.5rem 0.8rem;
+}
+
+.addComment {
+  padding: 0.5rem 1rem;
+  border-radius: 12px;
+  background:  #121212;
+  color: #fff;
+  font-weight: 600;
+}
+
+/* No comments text */
+.noComments {
+  text-align: center;
+  color: #888;
+  font-style: italic;
+}
+
+/* Fade-in animation */
+@keyframes modalFadeIn {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}

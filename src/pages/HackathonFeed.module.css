@@ -1,0 +1,283 @@
+/* ---------------- DARK FEED THEME ---------------- */
+
+.feedContainer {
+  margin-top: 2rem;
+  padding: 1rem;
+  background-color: #111827;
+  min-height: 100vh;
+}
+
+.feedHeader {
+  font-size: 1.8rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  color: #a5b4fc; /* soft purple */
+  text-align: center;
+}
+
+.hackathonGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.2rem;
+}
+
+.hackathonCard {
+  background: #1f2937;
+  border-radius: 20px;
+  padding: 1.2rem;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.6);
+  border: 2px solid #4f46e5;
+  background-clip: padding-box;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, background-position 1s ease;
+  position: relative;
+  color: #f3f4f6;
+}
+
+.hackathonCard:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 10px 24px rgba(79,70,229,0.7), 0 10px 40px rgba(99,102,241,0.5);
+}
+
+.hackathonCard::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 20px;
+  padding: 2px;
+  background: linear-gradient(135deg, #4f46e5, #06b6d4, #9333ea, #4f46e5);
+  background-size: 400% 400%;
+  animation: borderFlow 6s ease infinite;
+
+  /* Mask for border effect */
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+
+  pointer-events: none;
+}
+
+@keyframes borderFlow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.hackathonTitle {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 0.3rem;
+  color: #e0e7ff;
+}
+
+.hackathonType {
+  font-size: 0.9rem;
+  font-weight: normal;
+  color: #9ca3af;
+}
+
+.hackathonBy {
+  font-size: 0.85rem;
+  color: #c7d2fe;
+  margin-bottom: 0.5rem;
+}
+
+.hackathonDesc {
+  font-size: 0.95rem;
+  margin-bottom: 0.8rem;
+  color: #d1d5db;
+}
+
+.chipsContainer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 0.8rem;
+  margin-top:10px;
+}
+
+.chipSkill {
+  background: linear-gradient(135deg, #6366f1, #4f46e5);
+  color: #f3f4f6;
+  padding: 0.25rem 0.6rem;
+  border-radius: 9999px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.hackathonInterest {
+  font-size: 0.9rem;
+  margin-bottom: 0.6rem;
+  color: #e0e7ff;
+}
+
+
+.interestChip {
+  display: inline-block;
+  background: #2563eb;
+  color: #f3f4f6;
+  padding: 0.25rem 0.6rem;
+  border-radius: 9999px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  margin-top: 0.5rem;
+}
+
+.interestButton {
+  background: linear-gradient(135deg, #169b54, #07a70f); /* gradient like chips */
+  color: #ffffff;
+  border: none;
+  padding: 0.5rem 1.2rem;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(79,70,229,0.4);
+  transition: all 0.3s ease;
+}
+
+.interestButton:hover {
+  background: linear-gradient(135deg, #6366f1, #4f46e5);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(79,70,229,0.6);
+}
+
+.interestButton:hover:not(:disabled) {
+  background-color: #11b856;
+}
+
+.interestButton:disabled {
+  background: #e9392d;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+
+/* ------------------ Search & Filters ------------------ */
+.inputField {
+  width: 100%;
+  max-width: 400px;
+  padding: 0.6rem 1rem;
+  border-radius: 12px;
+  border: 1px solid #4b5563;
+  font-size: 1rem;
+  background-color: #1f2937;
+  color: #f3f4f6;
+  outline: none;
+  transition: all 0.3s ease;
+  margin-bottom: 0.5rem;
+}
+
+.inputField::placeholder {
+  color: #9ca3af;
+}
+
+.inputField:focus {
+  border-color: #6366f1;
+  box-shadow: 0 0 8px rgba(99,102,241,0.5);
+}
+
+/* React-Select Dark Theme */
+.css-1s2u09g-control {
+  background-color: #1f2937;
+  border-color: #4b5563;
+  color: #f3f4f6;
+}
+
+.css-1s2u09g-control:hover {
+  border-color: #6366f1;
+}
+
+.css-1uccc91-singleValue,
+.css-1uccc91-multiValue {
+  color: #f3f4f6;
+}
+
+.css-1okebmr-indicatorSeparator {
+  background-color: #4b5563;
+}
+
+.css-1hb7zxy-Menu {
+  background-color: #1f2937;
+  color: #f3f4f6;
+}
+
+.css-11unzgr {
+  color: #f3f4f6;
+}
+
+.css-2b097c-container {
+  width: 100%;
+  max-width: 400px;
+}
+
+/* ---------- FILTER BAR (One Line) ---------- */
+/* --- Filter Bar --- */
+.filterBar {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 0.6rem;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem;
+  width: 100%;
+  overflow: visible; /* allows dropdowns to overflow correctly */
+}
+
+.inputField {
+  flex: 1;
+  min-width: 220px;
+}
+
+.selectWrapper {
+  flex: 1;
+  min-width: 180px;
+  overflow: visible; /* ensures dropdown menus are not clipped */
+  position: relative; /* important for react-select menu positioning */
+}
+
+.filterBar::-webkit-scrollbar {
+  display: none; /* Hide scrollbar for Chrome/Safari */
+}
+
+.filterBar > * {
+  flex: 0 0 auto; /* Prevent shrinking */
+}
+
+.clearButton {
+  background-color: #4f46e5;
+  color: #f3f4f6;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 14px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  font-weight: 500;
+}
+
+.clearButton:hover {
+  background-color: #6366f1;
+}
+
+.selectMenuClear {
+  color: #f87171;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 8px 12px;
+  border-bottom: 1px solid #374151;
+  transition: background-color 0.2s;
+}
+
+.selectMenuClear:hover {
+  background-color: #374151;
+}
+
+/* remove blue outline on hidden inputs inside react-select */
+.react-select__input input {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+
+

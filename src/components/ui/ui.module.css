@@ -1,0 +1,90 @@
+/* src/components/ui/ui.module.css */
+
+/* Cards */
+.card {
+  border-radius: 24px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+  background-color: #fff;
+  overflow: hidden;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+}
+
+.cardContent {
+  padding: 16px 24px;
+}
+
+/* Buttons */
+.primaryButton {
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  border: none;
+  background-color: #4f46e5; /* indigo */
+  color: #fff;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+}
+
+.primaryButton:hover {
+  background-color: #6366f1;
+  transform: translateY(-1px);
+}
+
+.secondaryButton {
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  border: 1px solid #d1d5db; /* gray-300 */
+  background-color: #fff;
+  color: #111827; /* gray-900 */
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+}
+
+.secondaryButton:hover {
+  background-color: #f3f4f6; /* gray-100 */
+  transform: translateY(-1px);
+}
+
+/* Badges */
+.badge {
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  display: inline-block;
+  color: #fff;
+}
+
+.badge-post {
+  background-color: #10b981; /* green */
+}
+
+.badge-hackathon {
+  background-color: #8b5cf6; /* purple */
+}
+
+.badge-project {
+  background-color: #3b82f6; /* blue */
+}
+
+/* Typography helpers */
+.textSmall {
+  font-size: 0.85rem;
+  color: #6b7280; /* gray-500 */
+}
+
+.textMedium {
+  font-size: 1rem;
+  color: #111827; /* gray-900 */
+}
+
+.textLarge {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #111827;
+}

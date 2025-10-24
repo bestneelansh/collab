@@ -1,0 +1,32 @@
+.darkDatePickerWrapper {
+  background: #111827;
+  color: #f3f4f6;
+  border-radius: 12px;
+  padding: 10px;
+}
+
+.rdp {
+  --rdp-accent-color: #6366f1;
+  --rdp-background-color: #111827;
+  --rdp-outline: none;
+  color: #f3f4f6;
+  background-color: #111827;
+  border-radius: 12px;
+}
+
+.rdp-button {
+  color: #f3f4f6;
+  background-color: transparent;
+}
+
+.rdp-button:hover {
+  background-color: #4f46e5;
+  color: white;
+}
+
+.rdp-dropdown {
+  background-color: #1f2937;
+  color: #f3f4f6;
+  border: 1px solid #374151;
+  border-radius: 8px;
+}

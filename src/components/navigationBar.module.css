@@ -1,0 +1,71 @@
+.navbar {
+  display: flex;
+  align-items: center;
+  padding: 1rem 2rem;
+  background: #4f46e5;
+  color: white;
+  font-weight: bold;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+  flex-wrap:wrap;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15); /* subtle line */
+  backdrop-filter: blur(12px) saturate(160%); /* frosted glass */
+  -webkit-backdrop-filter: blur(12px) saturate(160%);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25); /* depth */
+  border-radius: 0 0 16px 16px; /* smooth bottom corners */
+}
+
+/* Link styling */
+.navLink {
+  color: white;
+  text-decoration: none;
+  font-size: 1rem;
+  position: relative;
+  flex: none;
+  text-align: center;
+  transition: color 0.3s, transform 0.3s;
+  padding: 0.25rem 0.75rem;
+  border-radius: 6px;
+}
+
+/* Underline effect */
+.navLink::after {
+  content: "";
+  position: absolute;
+  width: 0%;
+  height: 2px;
+  bottom: -3px;
+  left: 50%;
+  background: linear-gradient(90deg, #00e0a1, #0cb8ff); /* glowing gradient underline */
+  transition: all 0.35s ease-in-out;
+  transform: translateX(-50%);
+  border-radius: 4px;
+}
+
+.navLink:hover {
+  color: #dbeafe;
+  transform: translateY(-2px);
+}
+
+.navLink:hover::after {
+  width: 60%;
+}
+
+.navbar > *{
+  flex: 1 1 auto;
+  text-align:center;
+  min-width:100px;
+}
+
+/* Active link */
+.active {
+  color: #fff;
+}
+
+.active::after {
+  width: 60%;
+}
