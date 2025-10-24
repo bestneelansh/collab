@@ -73,6 +73,7 @@ function App() {
         />
         {/* Removed admin embeddings port*/}
         <Route path="/characters" element={<CharacterAnimationPage />} />
+        <Route path="*" element = {<Welcome/>} />
       </Routes>
     </>
   );
