@@ -71,9 +71,7 @@ function App() {
             </ProtectedRoute>
           }
         />
-        <Route path="/admin/generate-jobs" element={<AdminGenerateEmbeddings />} />
-        <Route path="/admin/generate-profiles" element={<AdminGenerateProfileEmbeddings />}/>
-
+        {/* Removed admin embeddings port*/}
         <Route path="/characters" element={<CharacterAnimationPage />} />
       </Routes>
     </>
