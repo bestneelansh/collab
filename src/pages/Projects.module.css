@@ -699,10 +699,12 @@
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.3px;
+  background: #ecfdf5;
+  color: #065f46;
 }
 
 .badge.wip {
-  background: #fff7ed;
+  background: #df7c0a;
   color: #c2410c;
 }
 
@@ -713,7 +715,7 @@
 
 .badge.archived {
   background: #f1f5f9;
-  color: #475569;
+  color: #225aa9;
 }
 
 .difficultyBadge {

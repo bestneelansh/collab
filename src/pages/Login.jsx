@@ -4,7 +4,7 @@ import { useNavigate, Link } from "react-router-dom";
 import styles from "./Login.module.css";
 import logo from "../assets/logo_second.png";
 import Lottie from "lottie-react";
-import loginAnimation from "../assets/animations/Login.json";
+import loginAnimation from "../assets/animations/Login_second.json";
 import { Eye, EyeOff } from "lucide-react";
 
 export default function Login() {
@@ -95,7 +95,7 @@ export default function Login() {
           animationData={loginAnimation}
           loop={true}
           autoplay={true}
-          style={{ width: 400, height: 400, margin: "0 auto" }}
+          style={{ width: 500, height: 500, margin: "0 auto" }}
           rendererSettings={{
             preserveAspectRatio: "xMidYMid slice",
           }}

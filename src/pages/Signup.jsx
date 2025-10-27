@@ -30,7 +30,7 @@ export default function Signup() {
     try {
       // Redirect URL
       const redirectUrl = window.location.hostname.includes("localhost")
-        ? "http://localhost:5173/profile"
+        ? "http://localhost:5173/collab/profile"
         : "https://bestneelansh.github.io/collab/profile";
 
       // 1️⃣ Sign up user

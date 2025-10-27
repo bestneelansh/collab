@@ -4,6 +4,11 @@
   box-sizing: border-box;
 }
 
+html, body {
+  height: auto;
+  overflow-y: auto;
+}
+
 /* Body settings */
 body {
   font-family: 'Arial', sans-serif;

@@ -691,7 +691,7 @@ export default function Projects() {
 
                 <div className={styles.projectMeta}>
                   {project.status && (
-                    <span className={`${styles.badge} ${styles[project.status.toLowerCase()]}`}>
+                    <span className={styles.badge}>
                       {project.status}
                     </span>
                   )}
