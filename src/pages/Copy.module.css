@@ -1,269 +1,294 @@
-/* OrbitStreakModal.module.css - Light glassy modal, premium look */
+/* OrbitStreakModal.module.css - Dark Premium Glass Orb (dynamic high-tech) */
 
-.backdrop{
+/* backdrop (deep vignette) */
+.backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(255,255,255,0.22); /* light glassy veil */
-  -webkit-backdrop-filter: blur(8px) saturate(1.05);
-  backdrop-filter: blur(8px) saturate(1.05);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1400;
   padding: 20px;
+  z-index: 1400;
+  background:
+    radial-gradient(1200px 600px at 20% 40%, rgba(24,18,40,0.55), transparent 10%),
+    radial-gradient(1000px 800px at 85% 60%, rgba(12,10,20,0.75), transparent 12%),
+    rgba(2, 4, 12, 0.72);
 }
 
-/* main modal */
-.modal{
+/* modal (dark frosted glass) */
+.modal {
   width: 100%;
-  max-width: 960px;
-  background: linear-gradient(180deg, rgba(255,255,255,0.9), rgba(250,250,255,0.85));
+  max-width: 980px;
+  color: #e8eefc;
   border-radius: 16px;
-  box-shadow: 0 12px 40px rgba(20,20,30,0.12);
-  padding: 18px;
-  color: #0b1220;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
-  border: 1px solid rgba(11,17,32,0.06);
+  border: 1px solid rgba(255,255,255,0.04);
+  background: linear-gradient(180deg, rgba(12,12,18,0.64), rgba(10,8,14,0.6));
+  box-shadow: 0 30px 80px rgba(6,6,10,0.75), inset 0 1px 0 rgba(255,255,255,0.02);
+  padding: 18px;
+  backdrop-filter: blur(8px) saturate(1.05);
 }
 
 /* header */
-.header{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-}
-.h2{
-  margin:0;
-  font-size:1.05rem;
-  font-weight:700;
-}
-.sub{ margin:0; font-size:0.86rem; color:rgba(11,17,32,0.6) }
+.header { display:flex; justify-content:space-between; align-items:center; gap:12px; }
+.titleWrap { display:flex; flex-direction:column; gap:2px; }
+.h2 { margin:0; font-size:1.05rem; font-weight:700; letter-spacing:0.2px; color: #f4f8ff; }
+.sub { margin:0; font-size:0.86rem; color: rgba(244,248,255,0.66); }
 
-.closeBtn{
-  background:transparent;
-  border:none;
-  cursor:pointer;
-  color:rgba(11,17,32,0.7);
-  padding:6px;
-  border-radius:8px;
+.closeBtn {
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  border: 1px solid rgba(255,255,255,0.04);
+  color: rgba(240,246,255,0.9);
+  padding: 8px;
+  border-radius: 10px;
+  cursor: pointer;
 }
-.closeBtn:hover{ background: rgba(11,17,32,0.03) }
+.closeBtn:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(20, 30, 90, 0.25); }
 
 /* content layout */
-.content{
-  margin-top:12px;
-}
-.visualArea{
-  display:grid;
-  grid-template-columns: 1fr 300px;
-  gap:18px;
-  align-items:center;
-}
+.content { margin-top:12px; display:grid; grid-template-columns: 1fr 300px; gap:18px; align-items:start; }
 
-/* center area (orbits) */
-.visualArea .centerArea{
-  position:relative;
+/* stage area (visuals) */
+.stage {
+  position: relative;
+  min-height: 420px;
   height: 420px;
   display:flex;
   align-items:center;
   justify-content:center;
+  pointer-events: none;
 }
 
-/* glowing core */
-.centerCore{
-  width:110px;
-  height:110px;
-  border-radius:50%;
-  display:grid;
-  place-items:center;
-  position:relative;
-  z-index:20;
-  background: linear-gradient(180deg, #ffffff, #f6f9ff);
-  box-shadow: 0 12px 40px rgba(80,100,255,0.06), 0 6px 18px rgba(15,20,40,0.06);
-}
-.coreGlow{
+/* particle shimmer background */
+.particles {
   position:absolute;
-  inset:-28px;
-  border-radius:50%;
-  background: radial-gradient(circle at 30% 30%, rgba(111,125,255,0.14), rgba(255,200,120,0.06));
-  filter: blur(18px);
-  z-index:10;
+  inset: -10%;
+  z-index: 2;
+  background-image: radial-gradient(1px 1px at 20% 15%, rgba(255,255,255,0.6) 10%, transparent 11%),
+                    radial-gradient(1px 1px at 40% 65%, rgba(255,255,255,0.45) 10%, transparent 11%),
+                    radial-gradient(1px 1px at 78% 30%, rgba(255,255,255,0.35) 10%, transparent 11%),
+                    radial-gradient(1px 1px at 85% 82%, rgba(255,255,255,0.22) 10%, transparent 11%);
+  opacity: 0.09;
+  filter: blur(1px);
+  transform: translateZ(0);
+  animation: particleDrift 10s linear infinite;
+  mix-blend-mode: screen;
+  pointer-events: none;
 }
-.coreLabel{
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  color:#061328;
-  font-weight:700;
-}
-.coreLabel strong{ font-size:1.25rem }
-
-/* orbit container absolutely positioned around center */
-.orbitContainer{
-  position:absolute;
-  inset:0;
-  display:block;
-  z-index:12;
-  pointer-events:none;
+@keyframes particleDrift {
+  0% { transform: translateY(0) scale(1); opacity:0.08; }
+  50% { transform: translateY(-14px) scale(1.02); opacity:0.12; }
+  100% { transform: translateY(0) scale(1); opacity:0.08; }
 }
 
-/* each orbit wrapper holds the ring and rotating wrapper */
-.orbitWrap{
-  position:absolute;
-  left:50%;
-  top:50%;
-  width: calc(var(--orbit-radius-px) * 2);
-  height: calc(var(--orbit-radius-px) * 2);
-  margin-left: calc(var(--orbit-radius-px) * -1);
-  margin-top: calc(var(--orbit-radius-px) * -1);
-  display:block;
-}
-
-/* subtle ring */
-.ringSvg{
-  position:absolute;
-  inset:0;
-  overflow:visible;
-  z-index:3;
-  opacity:0.7;
-}
-.ringSvgCircle{
-  fill:none;
-  stroke: rgba(11,17,32,0.06);
-  stroke-width: 1;
-}
-
-/* orbiting wrapper - rotates around center when active */
-.orbiting{
+/* halos container (centered) */
+.halos {
   position: absolute;
   left: 50%;
   top: 50%;
-  width: 0;
-  height: 0;
-  transform-origin: center center;
+  transform: translate(-50%, -50%);
+  width: 640px;
+  height: 640px;
+  z-index: 6;
   pointer-events: none;
 }
-.orbitingActive{
-  animation-name: spin;
-  animation-timing-function: linear;
-  animation-iteration-count: infinite;
-}
 
-/* The planet: positioned to the right edge, transform translateX(position) */
-.planet{
+/* single halo */
+.halo {
   position: absolute;
-  left: 0;
-  top: 0;
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  z-index: 8;
-  display: block;
-  transform: translateX(var(--orbit-radius-px)) translateY(-50%);
-  transition: box-shadow 240ms ease, transform 240ms ease;
-
-}
-
-/* inactive look */
-.planetInactive{
-  opacity: 0.35;
-  transform: translateX(var(--orbit-radius-px)) translateY(-50%) scale(0.92);
-  filter: grayscale(10%);
-  box-shadow: none;
-}
-
-/* active glowing planet */
-.planetActive{
-  opacity: 1;
-  transform: translateX(var(--orbit-radius-px)) translateY(-50%) scale(1);
-  box-shadow: 0 6px 18px rgba(0,0,0,0.06), 0 8px 30px var(--planet-color);
-}
-
-/* small bright center orb on planet */
-.planetCore{
-  display:block;
-  width:100%;
-  height:100%;
-  border-radius:inherit;
-  background: rgba(255,255,255,0.06);
-}
-
-/* comet tail (fading streak) */
-.tail{
-    position: absolute;
-  left: 0;
-  top: 0;
-  height: 6px;
-  width: 80px;
-  margin-top: -3px;
-  border-radius: 999px;
-  opacity: 0;
-  transform: translateX(calc(var(--orbit-radius-px) - 14px)) rotate(0deg);
-  filter: blur(8px);
+  left: 50%;
+  top: 50%;
+  transform-origin: center center;
+  width: calc(var(--r) * 2);
+  height: calc(var(--r) * 2);
+  margin-left: calc(var(--r) * -1);
+  margin-top: calc(var(--r) * -1);
   z-index: 6;
-  transition: opacity 220ms;
-}
-.tailActive{
-  opacity:1;
-  animation: tailFlow 1.1s linear infinite;
+  transition: opacity 260ms ease, transform 400ms ease;
 }
 
-/* orbit spin keyframes (rotate wrapper full circle) */
-@keyframes spin {
-  to { transform: rotate(360deg); }
+/* halo ring svg */
+.haloRing {
+  position: absolute;
+  inset: 0;
+  overflow: visible;
+  opacity: 0.08;
+  filter: blur(0.8px);
+}
+.haloCircle {
+  fill: none;
+  stroke: rgba(255,255,255,0.06);
+  stroke-width: 1.0;
+  stroke-linecap: round;
 }
 
-/* tail flow - slight waver of tail for realistic fade */
-@keyframes tailFlow {
-  0% { transform: translateX(0) rotate(-6deg); opacity: 0.88; filter: blur(10px) }
-  50% { transform: translateX(3px) rotate(-2deg); opacity: 0.95; filter: blur(8px) }
-  100% { transform: translateX(0) rotate(-6deg); opacity: 0.88; filter: blur(10px) }
+/* glow segment that lights up when aligned */
+.haloGlow {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 18%;
+  height: 8%;
+  transform-origin: 0% 50%;
+  margin-left: calc(var(--r) * 0.5); /* approximate placement on ring */
+  margin-top: -4%;
+  border-radius: 999px;
+  opacity: 0.0;
+  pointer-events: none;
 }
 
-/* side panel */
-.sidePanel{
-  background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(250,250,255,0.94));
-  border-radius:12px;
-  padding:14px;
+/* active vs inactive */
+.haloInactive { opacity: 0.22; transform: rotate(var(--halo-phase-deg)); }
+.haloActive {
+  opacity: 1;
+  transform: rotate(var(--halo-phase-deg));
+  animation: haloSpin var(--halo-speed-s) linear infinite, haloPulse calc(var(--halo-speed-s) * 0.5) ease-in-out infinite;
+  filter: drop-shadow(0 10px 40px rgba(0,0,0,0.55));
+}
+
+/* halo animations */
+@keyframes haloSpin { from { transform: rotate(var(--halo-phase-deg)) translateZ(0); } to { transform: rotate(calc(360deg + var(--halo-phase-deg))) translateZ(0); } }
+@keyframes haloPulse {
+  0% { transform: scale(0.995); opacity: 0.9; }
+  50% { transform: scale(1.02); opacity: 1; }
+  100% { transform: scale(0.995); opacity: 0.9; }
+}
+
+/* orb wrapper (center) */
+.orbWrap {
+  position: relative;
+  z-index: 18;
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  pointer-events: auto;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  transform-origin:center center;
+}
+
+/* orb surface: glass + inner core */
+.orbSurface {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  position: relative;
+  overflow: visible;
+  background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.03), rgba(255,255,255,0.01) 20%, rgba(6,8,14,0.35) 45%);
+  border: 1px solid rgba(255,255,255,0.04);
+  box-shadow:
+    0 25px 60px rgba(3,6,20,0.7),
+    inset 0 2px 10px rgba(255,255,255,0.02),
+    inset 0 -8px 30px rgba(10,16,28,0.5);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  transform: translateZ(0);
+}
+
+/* inner core (glowing center) */
+.orbCore {
+  width: 66%;
+  height: 66%;
+  border-radius: 50%;
+  background: linear-gradient(180deg, rgba(72, 112, 204, 0.9), rgba(10, 50, 167, 0.85));
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
+  gap:6px;
+  position: relative;
+  box-shadow: 0 6px 30px rgba(0,0,0,0.6), inset 0 2px 20px rgba(255,255,255,0.02);
+  transform: translateZ(0);
+}
+
+/* counter */
+.counter { display:flex; flex-direction:column; align-items:center; justify-content:center; color: #eaf3ff; }
+.count { font-size: 2.6rem; font-weight:800; letter-spacing:-1px; }
+.unit { font-size:0.85rem; color: rgba(234,243,255,0.78); margin-top: -6px; font-weight:600; }
+
+/* substat line */
+.subStat { font-size: 0.82rem; color: rgba(234,243,255,0.66); margin-top:6px; }
+
+/* rim glare (rotating sheen) */
+.rim {
+  position:absolute;
+  inset: -6%;
+  border-radius: 50%;
+  pointer-events: none;
+  background: linear-gradient(90deg, rgba(215, 19, 19, 0.85), rgba(11, 8, 161, 0.855));
+  filter: blur(12px);
+  transform: rotate(18deg);
+  mix-blend-mode: screen;
+  animation: rimSweep 3.6s linear infinite;
+}
+@keyframes rimSweep {
+  0% { transform: rotate(0deg) translateZ(0); opacity:0.9; }
+  50% { transform: rotate(180deg) translateZ(0); opacity:1; }
+  100% { transform: rotate(360deg) translateZ(0); opacity:0.9; }
+}
+
+/* side panel (controls) */
+.panel {
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  border-radius: 12px;
+  padding: 14px;
   display:flex;
   flex-direction:column;
   gap:12px;
-  border: 1px solid rgba(11,17,32,0.04);
+  border: 1px solid rgba(255,255,255,0.03);
+  z-index: 30;
+  pointer-events: auto;
 }
-.statsRow{ display:flex; justify-content:space-between; gap:10px; align-items:center; }
-.statLabel{ font-size:0.8rem; color:rgba(11,17,32,0.6) }
-.statValue{ font-weight:700; font-size:1.1rem; color:#061328 }
-.hint{ font-size:0.86rem; color: rgba(11,17,32,0.6) }
 
-/* align button */
-.alignBtn{
-  margin-top:6px;
-  background: linear-gradient(135deg, #6f9aff, #ffa67a);
-  border:none;
-  color:#051125;
-  padding:10px 12px;
-  border-radius:10px;
-  font-weight:700;
+/* hint text */
+.hint { font-size:0.9rem; color: rgba(234,243,255,0.66); line-height:1.2; }
+
+/* controls */
+.controls { display:flex; gap:10px; align-items:center; }
+
+/* primary align button (glowing gradient) */
+.alignBtn {
+  background: linear-gradient(135deg, rgba(80, 195, 255, 0.14), rgba(255,190,110,0.12));
+  border: 1px solid rgba(255,255,255,0.06);
+  color: #eaf3ff;
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-weight:800;
+  letter-spacing:0.3px;
   cursor:pointer;
   display:inline-flex;
   gap:8px;
   align-items:center;
   justify-content:center;
+  box-shadow: 0 10px 30px rgba(30,60,120,0.12), inset 0 1px 0 rgba(255,255,255,0.02);
+  transition: transform 160ms ease, box-shadow 160ms ease;
 }
-.alignBtn:disabled{ opacity:0.6; cursor:not-allowed; filter:grayscale(10%) }
+.alignBtn:active { transform: translateY(1px) scale(0.997); }
+.alignBtn:disabled { opacity:0.55; cursor:not-allowed; filter: grayscale(8%); transform:none; }
+
+/* secondary button */
+.secondary {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.03);
+  color: rgba(234,243,255,0.76);
+  padding: 8px 12px;
+  border-radius: 10px;
+  cursor:pointer;
+}
 
 /* footer */
-.footer{ margin-top:12px; }
-.footerNote{ font-size:0.8rem; color: rgba(11,17,32,0.55) }
+.footer { margin-top:12px; text-align:center; }
+.footerNote { font-size:0.8rem; color: rgba(234,243,255,0.55); }
 
 /* responsive */
-@media (max-width: 880px) {
-  .visualArea{ grid-template-columns: 1fr; }
-  .centerArea{ height: 360px; }
-  .sidePanel{ width: 100%; order: 2; }
+@media (max-width: 920px) {
+  .content { grid-template-columns: 1fr; }
+  .panel { width: 100%; order: 2; }
+  .stage { height: 360px; min-height: 360px; }
+  .orbWrap { width: 180px; height: 180px; }
+  .halos { width: 520px; height: 520px; }
 }
-
-/* utility: allow inline style animation durations per planet via inline style */
-.orbitingActive { /* default speed if not overridden inline */ animation-duration: 12s; }
-
