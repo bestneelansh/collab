@@ -248,7 +248,10 @@ export default function OrbitStreakModal({ user, onClose }) {
               <div className={styles.particles} aria-hidden="true" />
 
               {/* halos container */}
-              <div className={styles.halos}>
+              <div 
+                className={styles.halos}
+                style={{ ["--streak"]: alignedDays.filter(Boolean).length }}
+              >
                 {radii.map((r, idx) => {
                   const aligned = !!alignedDays[idx];
                   const color = haloColors[idx];
