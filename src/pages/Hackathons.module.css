@@ -32,7 +32,7 @@
   padding: 3rem 1rem 2rem 1rem;
   background: linear-gradient(135deg, #111827, #1f2937);
   border-radius: 24px;
-  margin-bottom: 20px;
+  margin-bottom: 0px;
   box-shadow: 0 10px 30px rgba(0,0,0,0.5);
 }
 
@@ -81,6 +81,17 @@
   position: relative;
 }
 
+.overlay {
+  position: fixed;
+  inset: 0; /* shorthand for top:0, right:0, bottom:0, left:0 */
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(3px);
+  z-index: 1500; /* raised to ensure above everything except sidebar */
+  transition: opacity 0.3s ease;
+  cursor: pointer;
+}
+
+
 /* Sidebar: stays sharp (no blur) */
 .leftSidebar {
   position: fixed;
@@ -98,6 +109,11 @@
   transition: transform 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
   border-radius: 0 24px 24px 0;
   color: #f3f4f6;
+  scrollbar-width: none;
+}
+
+.leftSidebar::-webkit-scrollbar {
+  display: none;
 }
 
 .leftSidebar.show {
@@ -168,6 +184,13 @@
   50% {
     filter: brightness(1.5);
   }
+}
+
+html,
+body,
+#root {
+  overscroll-behavior: none;
+  touch-action: none;
 }
 
 

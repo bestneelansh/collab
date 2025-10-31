@@ -4,7 +4,7 @@ import styles from "./Community.module.css";
 import Select, { components } from "react-select";
 import LoginPrompt from "../components/LoginPrompt";
 import useRedirectToLogin from "../utils/redirectToLogin";
-import { FaListAlt, FaHeading, FaPen, FaComments} from "react-icons/fa";
+import { FaListAlt, FaHeading, FaPen, FaComments, FaHeart} from "react-icons/fa";
 import Loader from "../components/Loader.jsx";
 
 export default function Community() {
@@ -20,10 +20,11 @@ export default function Community() {
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   const postRef = useRef(null);
   const redirectToLogin = useRedirectToLogin();
-  const [commentsModalOpen, setCommentsModalOpen] = useState(false);
   const [selectedPost, setSelectedPost] = useState(null);
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState("");
+  const [likedPosts, setLikedPosts] = useState([]);
+  const [postViewModalOpen, setPostViewModalOpen] = useState(false);
 
 
   const postTypeOptions = [
@@ -32,12 +33,6 @@ export default function Community() {
     { value: "question", label: "Question" },
     { value: "discussion", label: "Discussion" },
   ];
-
-  const ArrowOnlyControl = ({ children, ...props }) => (
-    <components.Control {...props}>
-      {children[1]} {/* Only arrow */}
-    </components.Control>
-  );
 
   useEffect(() => {
     const fetchData = async () => {
@@ -50,7 +45,34 @@ export default function Community() {
           .from("posts")
           .select("*")
           .order("created_at", { ascending: false });
-        if (!error) setPosts(postsData || []);
+
+        if (error) throw error;
+
+        if (postsData.length > 0) {
+          // 🔹 Collect all unique user IDs
+          const userIds = [...new Set(postsData.map((p) => p.user_id))];
+
+          // 🔹 Fetch usernames from users table
+          const { data: usersData, error: usersError } = await supabase
+            .from("users")
+            .select("id, username")
+            .in("id", userIds);
+
+          if (usersError) throw usersError;
+
+          // 🔹 Map users for quick lookup
+          const userMap = Object.fromEntries(usersData.map((u) => [u.id, u.username]));
+
+          // 🔹 Attach username to each post
+          const postsWithUsernames = postsData.map((p) => ({
+            ...p,
+            username: userMap[p.user_id] || "Anonymous",
+          }));
+
+          setPosts(postsWithUsernames);
+        } else {
+          setPosts([]);
+        }
       } catch (err) {
         console.error(err);
       }
@@ -69,7 +91,7 @@ export default function Community() {
   useEffect(() => {
     const handleEsc = (event) => {
       if (event.key === "Escape" && commentsModalOpen) {
-        setCommentsModalOpen(false);
+        setPostViewModalOpen(false);
       }
     };
 
@@ -77,22 +99,57 @@ export default function Community() {
     return () => {
       window.removeEventListener("keydown", handleEsc);
     };
-  }, [commentsModalOpen]);
+  }, [postViewModalOpen]);
 
+  useEffect(() => {
+    const fetchUserLikes = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      const { data, error } = await supabase
+        .from("post_likes")
+        .select("post_id")
+        .eq("user_id", user.id);
+
+      if (!error && data) {
+        setLikedPosts(data.map((d) => d.post_id));
+      }
+    };
+    fetchUserLikes();
+  }, [session]);
+
+  useEffect(() => {
+    const subscription = supabase
+      .channel("posts-changes")
+      .on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "posts" },
+        (payload) => {
+          setPosts((prev) =>
+            prev.map((p) =>
+              p.id === payload.new.id
+                ? { ...p, ...payload.new }
+                : p
+            )
+          );
+        }
+      )
+      .subscribe();
+
+    return () => supabase.removeChannel(subscription);
+  }, []);
 
   // Fetch comments for a specific post
   const fetchComments = async (postId) => {
     try {
       const { data: commentsData, error: commentsError } = await supabase
         .from("comments")
-        .select("*")
+        .select("id, content, created_at, user_id")
         .eq("post_id", postId)
         .order("created_at", { ascending: true });
 
       if (commentsError) throw commentsError;
 
       const userIds = [...new Set(commentsData.map(c => c.user_id))];
-
       const { data: usersData, error: usersError } = await supabase
         .from("users")
         .select("id, username")
@@ -100,22 +157,90 @@ export default function Community() {
 
       if (usersError) throw usersError;
 
-      const commentsWithUsernames = commentsData.map(c => {
-        const user = usersData.find(u => u.id === c.user_id);
-        return { ...c, username: user?.username || "Anonymous" };
-      });
+      const usersMap = Object.fromEntries(usersData.map(u => [u.id, u.username]));
+
+      const commentsWithUsernames = commentsData.map(c => ({
+        ...c,
+        username: usersMap[c.user_id] || "Anonymous",
+      }));
 
       setComments(commentsWithUsernames);
     } catch (err) {
-      console.error(err);
+      console.error("Error fetching comments:", err);
     }
   };
 
-  // Open modal and load comments for a post
-  const handleOpenComments = async (post) => {
+  const handleOpenPostView = async (post) => {
     setSelectedPost(post);
+    setPostViewModalOpen(true);
+
+    try {
+      await supabase.rpc("increment_view", { post_id: post.id });
+      setPosts(prev =>
+        prev.map(p =>
+          p.id === post.id
+            ? { ...p, views_count: (p.views_count || 0) + 1 }
+            : p
+        )
+      );
+    } catch (error) {
+      console.error("Error incrementing view:", error);
+    }
+
     await fetchComments(post.id);
-    setCommentsModalOpen(true);
+  };
+
+  const handleLike = async (postId) => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        alert("Please log in to like posts.");
+        return;
+      }
+
+      // Check if user has already liked this post
+      const { data: existingLike, error: checkError } = await supabase
+        .from("post_likes")
+        .select("id")
+        .eq("post_id", postId)
+        .eq("user_id", user.id)
+        .maybeSingle();
+
+      if (checkError) throw checkError;
+
+      if (existingLike) {
+        await supabase.rpc("decrement_like", {
+          post_id: postId,
+          user_id: user.id,
+        });
+
+        setPosts((prev) =>
+          prev.map((p) =>
+            p.id === postId ? { ...p, likes_count: p.likes_count - 1 } : p
+          )
+        );
+
+        // 👇 Remove from likedPosts
+        setLikedPosts((prev) => prev.filter((id) => id !== postId));
+      } else {
+        await supabase.rpc("increment_like", {
+          post_id: postId,
+          user_id: user.id,
+        });
+
+        setPosts((prev) =>
+          prev.map((p) =>
+            p.id === postId ? { ...p, likes_count: (p.likes_count || 0) + 1 } : p
+          )
+        );
+
+        // 👇 Add to likedPosts
+        setLikedPosts((prev) => [...prev, postId]);
+      }
+
+    } catch (error) {
+      console.error("Error toggling like:", error);
+    }
   };
 
   // Add a new comment
@@ -344,6 +469,7 @@ export default function Community() {
               <div
                 key={post.id}
                 className={`${styles.communityCard} ${styles[`card-${post.type}`]}`}
+                onClick={() => handleOpenPostView(post)}
               >
                 <div className={styles.badgeWrapper}>
                   <span className={`${styles.badge} ${styles[`badge-${post.type}`]}`}>
@@ -352,54 +478,135 @@ export default function Community() {
                 </div>
                 <h3 className={styles.communityTitle}>{post.title}</h3>
                 <p className={styles.communityContent}>{post.content}</p>
-
-                {/*Comments button*/}
-                <div className={styles.commentButtonWrapper}>
+                
+              {/* ===== Post Stats Row (Unified for Card & Modal) ===== */}
+              <div className={styles.postStatsRow}>
+                <div className={styles.statsGroup}>
+                  {/* ❤️ Like */}
                   <button
-                    className={styles.commentButton}
-                    onClick={() => handleOpenComments(post)}
-                    title="View comments"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleLike(post.id);
+                    }}
+                    className={`${styles.iconButton} ${
+                      likedPosts.includes(post.id) ? styles.liked : ""
+                    }`}
                   >
-                    <FaComments />
+                    <FaHeart className={styles.statIcon} />
+                    <span>{post.likes_count || 0}</span>
+                  </button>
+
+                  {/* 👁️ Views */}
+                  <div className={styles.iconButton}>
+                    <span className={styles.statIcon}>👁️</span>
+                    <span>{post.views_count || 0}</span>
+                  </div>
+
+                  {/* 💬 Comments */}
+                  <button
+                    className={styles.iconButton}
+                  >
+                    <FaComments className={styles.statIcon} />
                   </button>
                 </div>
-                
               </div>
-            ))}
+              </div>
+            ))
+            }
           </div>
         )}
       </div>
 
-      {commentsModalOpen && selectedPost && (
-        <div className={styles.modalOverlay} onClick={() => setCommentsModalOpen(false)}>
-          <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+      {postViewModalOpen && selectedPost && (
+      <div className={styles.modalOverlay} onClick={() => setPostViewModalOpen(false)}>
+        <div
+          className={`${styles.modalContent} ${styles.postViewLayout}`}
+          onClick={(e) => e.stopPropagation()}
+        >
+          {/* ===== LEFT: Post Section ===== */}
+          <div className={styles.postViewLeft}>
             {/* Header */}
+            <div className={styles.postHeader}>
+              <div className={styles.avatar}>
+                {/* {c.username ? c.username[0].toUpperCase() : "U"} */}
+                {selectedPost.username ? selectedPost.username[0].toUpperCase() : "U"}
+              </div>
+              <div>
+                <h2 className={styles.postTitle}>{selectedPost.title}</h2>
+                <p className={styles.postType}>{selectedPost.type}</p>
+              </div>
+            </div>
+
+            {/* Post Body */}
+            <div className={styles.postBody}>
+              <p>{selectedPost.content}</p>
+            </div>
+
+            {/* ===== Stats Row (Insta / YouTube style) ===== */}
+            <div className={styles.postStatsRow}>
+              <div className={styles.statsGroup}>
+                {/* ❤️ Like */}
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleLike(selectedPost.id);
+                  }}
+                  className={`${styles.iconButton} ${
+                    likedPosts.includes(selectedPost.id) ? styles.liked : ""
+                  }`}
+                >
+                  <FaHeart className={styles.statIcon} />
+                  <span>{selectedPost.likes_count || 0}</span>
+                </button>
+
+                {/* 👁️ Views */}
+                <div className={styles.iconButton}>
+                  <span className={styles.statIcon}>👁️</span>
+                  <span>{selectedPost.views_count || 0}</span>
+                </div>
+
+                {/* 💬 Comments */}
+                <div className={styles.iconButton}>
+                  <FaComments className={styles.statIcon} />
+                  <span>{comments.length || 0}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* ===== RIGHT: Comments Section ===== */}
+          <div className={styles.postViewRight}>
             <div className={styles.modalHeader}>
-              <h3>Comments for: {selectedPost.title}</h3>
-              <button className={styles.closeButton} onClick={() => setCommentsModalOpen(false)}>
+              <h3>Comments</h3>
+              <button
+                className={styles.closeButton}
+                onClick={() => setPostViewModalOpen(false)}
+              >
                 ✕
               </button>
             </div>
 
-            {/* Scrollable Comments */}
+            {/* Comments Feed */}
             <div className={styles.modalBody}>
               {comments.length === 0 ? (
-                <p className={styles.noComments}>No comments yet.</p>
+                <p className={styles.noComments}>No comments yet. Be the first!</p>
               ) : (
                 comments.map((c) => (
-                  <div key={c.id} className={styles.commentItem}>
-                    <div className={styles.commentText}>
-                      <strong className={styles.commentUsername}>{c.username}</strong>: {c.content}
+                    <div key={c.id} className={styles.commentItem}>
+                    <div className={styles.commentAvatar}>
+                      {c.username ? c.username[0].toUpperCase() : "U"}
                     </div>
-                    <div className={styles.commentTimestamp}>
-                      {new Date(c.created_at).toLocaleString()}
+                    <div className={styles.commentContent}>
+                      <div className={styles.commentUsername}>{c.username}</div>
+                      <div className={styles.commentText}>{c.content}</div>
+                      <div className={styles.commentTimestamp}>{formatTimeAgo(c.created_at)}</div>
                     </div>
                   </div>
                 ))
               )}
             </div>
 
-            {/* Add Comment */}
+            {/* Add Comment Input */}
             {session?.user && (
               <div className={styles.addComment}>
                 <input
@@ -410,19 +617,21 @@ export default function Community() {
                   className={styles.inputField}
                   onKeyDown={(e) => {
                     if (e.key === "Enter" && !e.shiftKey) {
-                      e.preventDefault(); // prevent newline
+                      e.preventDefault();
                       addComment();
                     }
                   }}
                 />
                 <button onClick={addComment} className={styles.saveButton}>
-                  Add
+                  Post
                 </button>
               </div>
             )}
           </div>
         </div>
-      )}
+      </div>
+    )}
+
     </div>
   );
 }
@@ -482,3 +691,27 @@ const selectStyles = {
   indicatorSeparator: (base) => ({ ...base, backgroundColor: "#374151" }),
   dropdownIndicator: (base) => ({ ...base, color: "#e0e0e0", ":hover": { color: "#6366f1" } }),
 };
+
+function formatTimeAgo(dateString) {
+  const date = new Date(dateString);
+  const now = new Date();
+  const seconds = Math.floor((now - date) / 1000);
+
+  const intervals = [
+    { label: "year", seconds: 31536000 },
+    { label: "month", seconds: 2592000 },
+    { label: "week", seconds: 604800 },
+    { label: "day", seconds: 86400 },
+    { label: "hour", seconds: 3600 },
+    { label: "minute", seconds: 60 },
+  ];
+
+  for (const interval of intervals) {
+    const count = Math.floor(seconds / interval.seconds);
+    if (count >= 1) {
+      return `${count} ${interval.label}${count > 1 ? "s" : ""} ago`;
+    }
+  }
+
+  return "Just now";
+}

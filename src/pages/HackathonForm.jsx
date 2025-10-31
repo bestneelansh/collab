@@ -156,7 +156,20 @@ export default function HackathonForm({ sidebarOpen, setSidebarOpen }) {
 
       {/* Dynamic fields based on type */}
       {form.type === "Collaboration" && (
+        
         <div className={styles.dynamicFields + " " + styles.slideIn}>
+          <h3 className={styles.sidebarHeadline}><AiOutlineCode /> Skills</h3>
+          <p className={styles.sidebarSubtext}>Select the skills required for your collaborators.</p>
+          <Select
+            isMulti
+            options={allSkills}
+            value={form.skills}
+            onChange={selected => setForm({ ...form, skills: selected })}
+            placeholder="Skills required for collaboration..."
+            menuPortalTarget={document.body}
+            styles={selectStyles}
+          />
+
           <h3 className={styles.sidebarHeadline}><FaTags /> Team Name</h3>
           <p className={styles.sidebarSubtext}>Enter the name of your team so other users can recognize it easily.</p>
           <input
@@ -177,17 +190,6 @@ export default function HackathonForm({ sidebarOpen, setSidebarOpen }) {
             className={styles.inputField}
           />
 
-          <h3 className={styles.sidebarHeadline}><AiOutlineCode /> Skills</h3>
-          <p className={styles.sidebarSubtext}>Select the skills required for your collaborators.</p>
-          <Select
-            isMulti
-            options={allSkills}
-            value={form.skills}
-            onChange={selected => setForm({ ...form, skills: selected })}
-            placeholder="Skills required for collaboration..."
-            menuPortalTarget={document.body}
-            styles={selectStyles}
-          />
         </div>
       )}
 

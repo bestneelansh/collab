@@ -1,0 +1,291 @@
+/* === OVERLAY === */
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 0, 0, 0.85);
+  backdrop-filter: blur(10px);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top:20px;
+  z-index: 1000;
+  animation: fadeIn 0.25s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.97); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* === MODAL BOX === */
+.modalContent {
+  background: linear-gradient(160deg, #141010, #0a0000);
+  border: 1px solid rgba(255, 0, 0, 0.15);
+  border-radius: 14px;                    /* slightly smaller radius */
+  width: 360px;                           /* slightly narrower */
+  max-width: 94%;
+  max-height: 80vh;
+  padding: 12px 12px;                     /* reduced padding */
+  color: #fff;
+  box-shadow: 0 0 30px rgba(255, 0, 0, 0.18);
+  position: relative;
+  overflow-y: auto;
+  top: var(--modal-top, 18px);
+  display: flex;                          /* stack content compactly */
+  flex-direction: column;
+  gap: 8px;
+  animation: popIn 0.18s ease;
+}
+
+@keyframes popIn {
+  from { transform: translateY(-15px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+/* === HEADER === */
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0px;
+}
+
+.headerLeft {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.headerLeft h3 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #ff4d4d;
+  letter-spacing: 0.3px;
+}
+
+.headerIcon {
+  font-size: 1.4rem;
+}
+
+.closeIcon {
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.8);
+  transition: 0.25s;
+}
+.closeIcon:hover {
+  color: #ff4d4d;
+  transform: rotate(90deg) scale(1.1);
+}
+
+/* === ANIMATION === */
+.animationContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0px;
+  transition: 0.2s ease;
+}
+.animationContainer canvas,
+.animationContainer svg {
+  width: 84px !important;
+  height: 84px !important;
+}
+
+.streakCount {
+  font-size: .9rem;
+  color: #ff4d4d;
+  font-weight: 700;
+  margin-top: 2px;
+  text-shadow: 0 0 10px rgba(255, 77, 77, 0.5);
+}
+
+.dragonMessage {
+  text-align: center;
+  margin-bottom: 0px;
+  padding: 0px;
+  max-width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+/* Word-by-word, character pop animation */
+.popText {
+  margin: 0;
+  text-align: center;
+  font-size: 0.95rem;
+  line-height: 1.2;
+  display: inline-block;
+  padding: 0px;
+}
+
+/* each word groups its characters so words animate one after another */
+.word {
+  display: inline-block;
+  white-space: nowrap;
+}
+
+/* tiny spacer to preserve word spacing visually */
+.wordSpace {
+  display: inline-block;
+  width: 0.5ch;
+}
+
+/* each character pops with its own staggered delay */
+.char {
+  display: inline-block;
+  transform-origin: center;
+  opacity: 0;
+  animation: charPop 360ms cubic-bezier(0.2, 1.05, 0.3, 1) both;
+  will-change: transform, opacity;
+}
+
+/* reuse existing moods for color/tint */
+.hungry .char { color: rgb(224, 39, 39); }
+.feeding .char { color: rgb(244, 244, 24); }
+.happy .char { color: rgb(79, 203, 79); }
+
+/* keyframes for single character pop (small overshoot then settle) */
+@keyframes charPop {
+  0% {
+    transform: translateY(8px) scale(0.86);
+    opacity: 0;
+  }
+  60% {
+    transform: translateY(-4px) scale(1.06);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+/* ...existing code... *
+
+.cursor {
+  display: inline-block;
+  animation: blink 0.8s infinite;
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+@keyframes popIn {
+  0% {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* === STATS === */
+.statsRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 8px 0 12px;
+}
+
+.statBox {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 10px;
+  padding: 8px 10px;                       /* reduced padding */
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 0 8px rgba(255, 0, 0, 0.06);
+}
+
+.statBox:hover {
+  background: rgba(255, 77, 77, 0.15);
+  transform: translateY(-2px);
+}
+
+.statLabel {
+  font-size: 0.7rem;
+  opacity: 0.75;
+  display: block;
+}
+
+.statValue {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #fff;
+}
+
+/* === STREAK GRID === */
+.streakGrid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+  justify-items: center;
+  margin: 8px 0 12px 0;
+}
+
+.streakDay {
+  width: 24px;
+  height: 24px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.72rem;
+  transition: all 0.25s ease;
+}
+
+.streakDay:hover {
+  background: rgba(255, 0, 0, 0.25);
+  transform: scale(1.05);
+}
+
+.checkedDay {
+  background: linear-gradient(145deg, #ff4d4d, #a30000);
+  color: #fff;
+  font-weight: 700;
+  box-shadow: 0 0 8px rgba(255, 40, 40, 0.6);
+  transform: scale(1.05);
+}
+
+/* === BUTTON === */
+.checkInBtn {
+  display: block;
+  width: 100%;
+  padding: 9px 0;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(90deg, #ff3333, #a30000);
+  color: white;
+  font-weight: 600;
+  font-size: 0.92rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.checkInBtn:hover:not(:disabled) {
+  background: linear-gradient(90deg, #ff0000, #ff4d4d);
+  box-shadow: 0 0 18px rgba(255, 0, 0, 0.4);
+  transform: translateY(-1px);
+}
+
+.checkInBtn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+  background: linear-gradient(90deg, #333, #222);
+}
+
+.headerIcon, .checkInBtn svg, .statsRow svg {
+  vertical-align: middle;
+  margin-left: 4px;
+}

@@ -9,6 +9,10 @@ html, body {
   overflow-y: auto;
 }
 
+html {
+  scrollbar-gutter: stable; /* keeps space for scrollbar even when hidden */
+}
+
 /* Body settings */
 body {
   font-family: 'Arial', sans-serif;

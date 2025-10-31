@@ -16,6 +16,8 @@ import { supabase } from "./supabaseClient";
 import AdminGenerateEmbeddings from "./pages/AdminGenerateEmbeddings";
 import AdminGenerateProfileEmbeddings from "./pages/AdminGenerateProfileEmbeddings";
 import CharacterAnimationPage from "./pages/CharacterAnimationPage";
+import RecommendedJobs from "./pages/RecommendedJobs";
+import Copy from "./pages/Copy";
 
 function App() {
   const location = useLocation();
@@ -74,6 +76,8 @@ function App() {
         {/* Removed admin embeddings port*/}
         <Route path="/characters" element={<CharacterAnimationPage />} />
         <Route path="*" element = {<Welcome/>} />
+        <Route path="/recommended" element={<RecommendedJobs />} />
+        <Route path="/copy" element={<Copy/>}/>
       </Routes>
     </>
   );

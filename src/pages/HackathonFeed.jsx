@@ -3,7 +3,7 @@ import { supabase } from "../supabaseClient";
 import Select, { components } from "react-select";
 import styles from "./HackathonFeed.module.css";
 import Loader from "../components/Loader.jsx";
-import { MdCategory, MdBuild } from "react-icons/md";
+import { MdCategory, MdBuild, MdSchool} from "react-icons/md";
 import useRedirectToLogin from "../utils/redirectToLogin";
 import LoginPrompt from "../components/LoginPrompt.jsx";
 
@@ -19,7 +19,11 @@ export default function HackathonFeed() {
   const [allSkills, setAllSkills] = useState([]);
   const [typeOptions, setTypeOptions] = useState([]);
   const [currentUser, setCurrentUser] = useState(null);
-  const [openDropdown, setOpenDropdown] = useState(null); // "type" | "skills" | null
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [openDropdown, setOpenDropdown] = useState(null); 
+  const [collegeFilter, setCollegeFilter] = useState([]);
+  const [collegeOptions, setCollegeOptions] = useState([]);
   const placeholders = [
     "🔍 Search hackathons by name or theme...",
     "🚀 Looking for ongoing hackathons to join?",
@@ -61,6 +65,7 @@ export default function HackathonFeed() {
     </components.ValueContainer>
   );
 
+  // Dynamically changing placeholders
   useEffect(() => {
     let index = 0;
     const interval = setInterval(() => {
@@ -70,40 +75,92 @@ export default function HackathonFeed() {
     return () => clearInterval(interval);
   }, []);
 
-  // Fetch hackathons
   useEffect(() => {
-    async function fetchHackathons() {
-      const { data, error } = await supabase
-        .from("hackathons")
-        .select("*, profiles(username), hackathon_interest(id, user_id)")
-        .order("created_at", { ascending: false });
+    if (page > 1) fetchHackathons();
+  }, [page]);
 
-      if (error) {
-        console.error(error);
-        setPosts([]);
-      } else {
-        // Enrich posts with interest_count and interested_user_ids
-        const enriched = data.map((h) => ({
-          ...h,
-          interest_count: (h.hackathon_interest || []).length,
-          interested_user_ids: (h.hackathon_interest || []).map(i => i.user_id),
-        }));
-        setPosts(enriched);
+  //fetch recommended hackathons
+  async function fetchHackathons(reset = false) {
+    setLoading(true);
 
-        // Get type options
-        const types = [...new Set(data.map(h => h.type))];
-        setTypeOptions(types.map(t => ({ value: t, label: t })));
+    const { data: { user } } = await supabase.auth.getUser();
+    setCurrentUser(user);
 
-        // Get all skills
-        const skillsSet = new Set();
-        data.forEach(h => (h.skills || []).forEach(s => skillsSet.add(s)));
-        setAllSkills([...skillsSet].map(s => ({ value: s, label: s })));
-      }
-      setLoading(false);
+    const currentPage = reset ? 1 : page;
+    const limit = 20;
+    const offset = (currentPage - 1) * limit;
+
+    let personalized = [];
+
+    if (user) {
+      const { fetchRecommendedHackathons } = await import("../utils/fetchRecommendedHackathons");
+      personalized = await fetchRecommendedHackathons(user.id, {
+        skills: skillFilter,
+        categories: [],
+        type: typeFilter,
+        teamSize: null,
+        limit,
+        offset,
+      });
+  }
+
+  if (personalized?.length) {
+    if (reset) setPosts(personalized);
+    else setPosts((prev) => [...prev, ...personalized]);
+    setHasMore(personalized.length === limit);
+    setLoading(false);
+    return;
+  }
+
+  // fallback normal query
+  const { data, error } = await supabase
+    .from("hackathons")
+    .select("*, profiles(username, college), hackathon_interest(id, user_id)")
+    .order("created_at", { ascending: false })
+    .range(offset, offset + limit - 1);
+
+  if (error) {
+    console.error(error);
+    setPosts([]);
+  } else {
+    const enriched = data.map((h) => ({
+      ...h,
+      interest_count: (h.hackathon_interest || []).length,
+      interested_user_ids: (h.hackathon_interest || []).map((i) => i.user_id),
+    }));
+
+    if (reset) setPosts(enriched);
+    else setPosts((prev) => [...prev, ...enriched]);
+  }
+
+  setHasMore(data?.length === limit);
+  setLoading(false);
+  }
+
+  // Fetch all colleges
+  useEffect(() =>{
+    async function fetchColleges() {
+    const { data, error } = await supabase
+      .from("colleges")
+      .select("name")
+      .order("name", { ascending: true });
+
+    if (error) {
+      console.error("Error fetching colleges:", error);
+      return;
     }
 
-    fetchHackathons();
+    setCollegeOptions(data.map((c) => ({ value: c.name, label: c.name })));
+  }
+  fetchColleges();
   }, []);
+
+
+  // Fetch hackathons
+  useEffect(() => {
+    setPage(1);
+    fetchHackathons(true);
+  }, [skillFilter, typeFilter]);
 
   // Fetch current user
   useEffect(() => {
@@ -114,30 +171,79 @@ export default function HackathonFeed() {
     fetchUser();
   }, []);
 
-  // Filtered posts based on search, type, and skills
-  const filteredPosts = posts.filter(post => {
-    const matchesSearch =
-      post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      post.description.toLowerCase().includes(searchQuery.toLowerCase());
+  useEffect(() => {
+    // Type options (static)
+    setTypeOptions([
+      { value: "Collaboration", label: "Collaboration" },
+      { value: "Announcement", label: "Announcement" },
+    ]);
 
-    const matchesType = typeFilter ? post.type === typeFilter : true;
+    // Fetch distinct skills dynamically from the hackathons table
+    async function fetchSkills() {
+      const { data, error } = await supabase
+        .from("hackathons")
+        .select("skills")
+        .not("skills", "is", null);
 
-    const matchesSkills =
-      skillFilter.length === 0 ||
-      skillFilter.every(f => (post.skills || []).includes(f.value));
+      if (error) {
+        console.error("Error fetching skills:", error);
+        return;
+      }
 
-    return matchesSearch && matchesType && matchesSkills;
-  });
+      // Flatten skills arrays and deduplicate
+      const uniqueSkills = [...new Set(data.flatMap((row) => row.skills || []))];
 
-  async function handleInterested(post) { 
-  setSaving(post.id);
+      // Convert to react-select format
+      setAllSkills(uniqueSkills.map((s) => ({ value: s, label: s })));
+    }
 
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) {
-    setShowLoginPrompt(true);
-    setSaving(null);
-    return;
-  }
+    fetchSkills();
+  }, []);
+
+    // Filtered posts based on search, type, and skills
+    const filteredPosts = posts
+      .map((post) => {
+        const score =
+          fuzzyScore(post.title, searchQuery) +
+          fuzzyScore(post.description, searchQuery) +
+          fuzzyScore(post.type, searchQuery) +
+          fuzzyScore(post.profiles?.username, searchQuery) +
+          fuzzyScore(post.profiles?.college, searchQuery) +
+          (Array.isArray(post.skills)
+            ? post.skills.reduce((acc, skill) => acc + fuzzyScore(skill, searchQuery), 0)
+            : 0) +
+          (Array.isArray(post.categories)
+            ? post.categories.reduce((acc, cat) => acc + fuzzyScore(cat, searchQuery), 0)
+            : 0) +
+          fuzzyScore(post.category, searchQuery) +
+          fuzzyScore(post.location, searchQuery);
+
+        const matchesSearch = searchQuery.trim() === "" || score > 0;
+        const matchesCollege =
+          collegeFilter.length === 0 ||
+          collegeFilter.includes(post.profiles?.college);
+        const matchesType = typeFilter ? post.type === typeFilter : true;
+        const matchesSkills =
+          skillFilter.length === 0 ||
+          skillFilter.every((f) => (post.skills || []).includes(f.value));
+
+        const isVisible = matchesSearch && matchesType && matchesSkills && matchesCollege;
+
+        return { ...post, score, isVisible };
+      })
+      .filter((post) => post.isVisible)
+      .sort((a, b) => b.score - a.score);
+
+    // send query of interest to creator 
+    async function handleInterested(post) { 
+      setSaving(post.id);
+
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        setShowLoginPrompt(true);
+        setSaving(null);
+        return;
+      }
 
   // Prevent creator from clicking
   if (post.user_id === user.id) {
@@ -243,7 +349,7 @@ export default function HackathonFeed() {
 
   alert("Marked as interested ✅");
   setSaving(null);
-}
+    }
 
 
   if (loading) return <Loader fullscreen={true} />;
@@ -261,6 +367,43 @@ export default function HackathonFeed() {
         className={styles.inputField}
       />
 
+      {/* college filter */}
+      <div style={{ position: "relative", display: "inline-block", marginRight: "10px" }}>
+        <MdSchool
+          size={24}
+          onClick={() => setOpenDropdown(openDropdown === "college" ? null : "college")}
+          style={{ cursor: "pointer", color: "#4f46e5" }}
+          title="College filter"
+        />
+        {openDropdown === "college" && (
+          <div style={{ position: "absolute", top: "30px", minWidth: "200px", zIndex: 999 }}>
+            <Select
+              options={collegeOptions} // e.g. [{ value: 'NIT Delhi', label: 'NIT Delhi' }, ...]
+              placeholder="🎓 Search Colleges"
+              isMulti
+              isClearable
+              isSearchable   // ✅ allow typing/searching
+              hideSelectedOptions={false}
+              closeMenuOnSelect={false}
+              components={{
+                Option: CheckboxOption,
+                MenuList: CustomMenuList,
+                MultiValue: () => null, // 🚫 hide selected tags in input
+              }}
+              value={collegeFilter.map((college) => ({
+                label: college,
+                value: college,
+              }))}
+              onChange={(selected) => {
+                setCollegeFilter(selected ? selected.map((s) => s.value) : []);
+              }}
+              styles={customSelectStyles}
+            />
+          </div>
+        )}
+      </div>
+
+      {/* category filter */}
       <div style={{ position: "relative", display: "inline-block", marginRight: "10px",marginLeft:"5px "}}>
         <MdCategory
           size={24}
@@ -311,6 +454,7 @@ export default function HackathonFeed() {
         )}
       </div> 
 
+        {/* type filter */}
       <div style={{ position: "relative", display: "inline-block", marginRight: "10px" }}>
         <MdBuild
           size={24}
@@ -367,6 +511,7 @@ export default function HackathonFeed() {
         onClick={() => {
           setSearchQuery("");
           setTypeFilter("");
+          setCollegeFilter("");
           setSkillFilter([]);
         }}
         className={styles.clearButton}
@@ -385,7 +530,13 @@ export default function HackathonFeed() {
               <h3 className={styles.hackathonTitle}>
                 {post.title} <span className={styles.hackathonType}>({post.type})</span>
               </h3>
-              <p className={styles.hackathonBy}>By: {post.profiles?.username || "Unknown"}</p>
+              <p className={styles.hackathonBy}>
+                  By: {post.profiles?.full_name || "Unknown"}
+                  {post.profiles?.college && (
+                    <span className={styles.hackathonCollege}> • {post.profiles.college}</span>
+                  )}
+              </p>
+
               <p className={styles.hackathonDesc}>{post.description}</p>
 
               {/* Dynamic UI for Collaboration / Announcement */}
@@ -453,6 +604,16 @@ export default function HackathonFeed() {
           ))}
         </div>
       )}
+      {hasMore && !loading && (
+        <div style={{ textAlign: "center", marginTop: "2rem" }}>
+          <button
+            onClick={() => setPage((prev) => prev + 1)}
+            className={styles.loadMoreButton}
+          >
+            Load More
+          </button>
+        </div>
+      )}
     </div>
   );
 }
@@ -470,6 +631,10 @@ const customSelectStyles = {
     color: '#f3f4f6',
     minHeight: '40px',
     width: '100%',
+  }),
+  input: (provided) => ({
+    ...provided,
+    color: '#f5f6f9ff', // 🎨 change this to whatever color you want
   }),
   singleValue: (provided) => ({ ...provided, color: '#f3f4f6' }),
   multiValue: (provided) => ({ ...provided, backgroundColor: '#4f46e5', color: '#f3f4f6' }),
@@ -580,6 +745,19 @@ const CustomMenuList = (props) => {
     </components.MenuList>
   );
 };
+
+function fuzzyScore(text = "", query = "") {
+  if (!text || !query) return 0;
+
+  const t = text.toLowerCase().trim();
+  const q = query.toLowerCase().trim();
+
+  if (t === q) return 3;          // exact match
+  if (t.startsWith(q)) return 2;  // prefix match
+  if (t.includes(q)) return 1;    // partial match
+  return 0;
+}
+
 
 
 

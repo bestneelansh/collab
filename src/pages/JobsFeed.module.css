@@ -31,6 +31,105 @@ html, body {
     pulseGradient 3s ease-in-out infinite;
 }
 
+.reactSelect {
+  min-width: 180px;
+  font-size: 0.9rem;
+  flex-shrink: 0;
+}
+
+@media (max-width: 640px) {
+  .reactSelect {
+    min-width: 140px;
+  }
+}
+
+/* ===== Match Score Section ===== */
+.matchContainer {
+  margin-top: 10px;
+  background-color: #1f2937; /* dark gray background */
+  padding: 10px;
+  border-radius: 12px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.3);
+  transition: all 0.3s ease;
+}
+
+.matchText {
+  font-size: 0.9rem;
+  color: #f3f4f6;
+  font-weight: 500;
+  margin-bottom: 6px;
+}
+
+.matchBar {
+  position: relative;
+  width: 100%;
+  height: 10px;
+  border-radius: 8px;
+  background-color: rgba(255, 255, 255, 0.15);
+  overflow: hidden;
+  margin-top: 6px;
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+}
+
+.matchFill {
+  height: 100%;
+  border-radius: 8px;
+  position: relative;
+  transition: width 0.8s ease-in-out, background-color 0.5s ease-in-out;
+}
+
+/* ✨ Shimmer effect only for >70% match */
+.matchFill.shimmer::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 40%;
+  background: linear-gradient(
+    120deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.3) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  transform: translateX(-100%);
+  animation: shimmer 2s infinite linear;
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(250%); }
+}
+
+.aiMatchSection {
+  margin-top: auto;
+  margin-bottom: 10px;
+}
+
+.aiMatchBtn {
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  color: #6ee7b7;
+  padding: 5px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  font-size: 0.9rem;
+}
+
+.aiMatchBtn:hover {
+  background: rgba(16, 185, 129, 0.25);
+  border-color: rgba(52, 211, 153, 0.8);
+  transform: translateY(-1px);
+}
+
+/* Animate the width smoothly */
+@keyframes fillBar {
+  from { width: 0%; opacity: 0.3; }
+  to { width: var(--match-width, 100%); opacity: 1; }
+}
+
 /* Animations */
 @keyframes pulseGradient {
   0%, 100% { filter: brightness(1); }
@@ -192,8 +291,10 @@ html, body {
 
 /* ====== Job Cards ====== */
 .card {
+  position:relative;
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
   background: #1e293b; 
   border-radius: 16px;
   padding: 20px;

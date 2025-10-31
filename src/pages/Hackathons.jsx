@@ -36,13 +36,32 @@ export default function Hackathons() {
     fetchSession();
   }, []);
 
+  useEffect(() => {
+    const root = document.getElementById("root");
+    const html = document.documentElement;
+    const body = document.body;
+
+    if (showFormSidebar) {
+      // Disable scroll everywhere
+      html.style.overflow = "hidden";
+      body.style.overflow = "hidden";
+      if (root) root.style.overflow = "hidden";
+    } else {
+      // Restore normal scroll
+      html.style.overflow = "";
+      body.style.overflow = "";
+      if (root) root.style.overflow = "";
+    }
+  }, [showFormSidebar]);
+
   return (
     <div className={styles.hackathonPage}>
       {showFormSidebar && (
-        <div className={`${styles.leftSidebar} ${styles.active}`} 
-        onClick={() => setShowFormSidebar(false)}>  
-      </div>
-      )}
+      <div
+        className={styles.overlay}
+        onClick={() => setShowFormSidebar(false)}
+      />
+    )}
 
       {/* Login Prompt */}
       {showLoginPrompt && (
@@ -72,6 +91,14 @@ export default function Hackathons() {
             Explore Hackathons
           </button>
         </div>
+        <p style={{
+          fontSize: "1.2rem",
+          color: "#c7d2fe",
+          opacity: "0.9",
+          marginTop: "1.5rem",
+        }}>
+          🎯 Get AI-recommended hackathons based on your profile and interests
+        </p>
       </div>
 
       <div className={styles.container}>
@@ -86,7 +113,10 @@ export default function Hackathons() {
           >
             ×
           </button>
-          <HackathonForm />
+          <HackathonForm
+            sidebarOpen={showFormSidebar}
+            setSidebarOpen={setShowFormSidebar}
+          />
         </div>
 
         {/* Right Sidebar: Feed */}

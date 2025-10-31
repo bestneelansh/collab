@@ -168,7 +168,7 @@ form {
 
 /* For Firefox */
 * {
-  scrollbar-width: thin;
+  scrollbar-width: none;
   scrollbar-color: #4f46e5 #1b1b1d; /* thumb color | track color */
 }
 

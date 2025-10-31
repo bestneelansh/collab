@@ -18,6 +18,10 @@ export default function Projects() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [projects, setProjects] = useState([]);
+  const [filters, setFilters] = useState({
+    categories: [],
+    difficulty: null,
+  });
   const [allSkills, setAllSkills] = useState([]);
   const [allTags, setAllTags] = useState([]);
   const [allCategories, setAllCategories] = useState([]);
@@ -126,17 +130,33 @@ export default function Projects() {
 
   // Fetch projects
   useEffect(() => {
-    async function fetchProjects() {
-      const { data, error } = await supabase
-        .from("projects")
-        .select("*")
-        .order("created_at", { ascending: false });
-      if (error) console.error(error);
-      else setProjects(data || []);
-      setLoading(false);
-    }
+    if (!user?.id) return;
     fetchProjects();
-  }, []);
+  }, [user, filters]);
+
+  async function fetchProjects() {
+    setLoading(true);
+
+    const { data, error } = await supabase.rpc("match_projects_for_user_with_filters", {
+      p_user_id: user.id,
+      p_categories:
+        filters.categories && filters.categories.length > 0 ? filters.categories : null,
+      p_difficulty: filters.difficulty,
+      p_visibility: "public",
+      match_limit: 50,
+    });
+
+    if (error) {
+      console.error("❌ Error fetching projects:", error);
+      setProjects([]);
+    } else {
+      // ✅ Sort projects by similarity/match score descending
+      const sorted = (data || []).sort((a, b) => (b.similarity || 0) - (a.similarity || 0));
+      setProjects(sorted);
+    }
+
+    setLoading(false);
+  }
 
   // Fetch tags
   useEffect(() => {
